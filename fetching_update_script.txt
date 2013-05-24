@@ -1,0 +1,23 @@
+Keeping your public repository up-to-date
+
+
+
+Fetching changes from upstream and pushing them to github
+Your fork at Github is not updated automatically. To keep it synced with the upstream Moodle repository, you have to fetch the recent changes from the official moodle.git and push them to your public repository. To avoid problems with this it is strongly recommended that you never modify the standard Moodle branches. Remember: never commit directly into master and MOODLE_xx_STABLE branches. In other words, always create topic branches to work on. In Gitspeak, the master branch and MOODLE_xx_STABLE branches should be always fast-forwardable.
+To keep your public repository up-to-date, we will register remote repository git://git.moodle.org/moodle.git under 'upstream' alias. Then we create a script to be run regularly that fetches changes from the upstream repository and pushes them to your public repository. Note that this procedure will not affect your local working directory.
+To register the upstream remote:
+   cd moodle
+   git remote add upstream git://git.moodle.org/moodle.git
+The following commands can be used to keep the standard Moodle branches at your Github repository synced with the upstream repository. You may wish to store them in a script so that you can run it every week after the upstream repository is updated.
+
+
+   #!/bin/sh
+   git fetch upstream
+   for BRANCH in MOODLE_19_STABLE MOODLE_20_STABLE MOODLE_21_STABLE MOODLE_22_STABLE MOODLE_23_STABLE MOODLE_24_STABLE master; do
+       git push origin refs/remotes/upstream/$BRANCH:$BRANCH
+   done
+
+
+[edit] How it works
+The git-fetch command does not modify your current working dir (your checkout). It just downloads all recent changes from a remote repository and stores them into so called remote-tracking branches. The git-push command takes these remote-tracking branches from upstream and pushes them to Github under the same name. Understanding this fully requires a bit knowledge of Git internals - see gitrevisions(7) man page.
+Note there is no need to switch the local branch during this. You can even execute this via cron at your machine. Just note that the upstream repository updates typically just once a week.
